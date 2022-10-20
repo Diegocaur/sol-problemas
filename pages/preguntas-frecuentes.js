@@ -25,7 +25,7 @@ export default function PreguntasFrecuentes({}){
                 let {data:carrera,error} = await supabaseClient.from('carrera').select('id_carrera').eq('id_director',user.id);
                 setCarrera(carrera[0].id_carrera);
                 let {data:pregFrec} = await supabaseClient.from('preguntas_frecuentes').select('*').eq('id_carrera',carrera[0].id_carrera).order('id_preguntas',{ascending:true});
-                console.log(pregFrec);
+                //console.log(pregFrec);
                 setPreguntasFrecuentes(pregFrec);
             }
             if(rol===3){
