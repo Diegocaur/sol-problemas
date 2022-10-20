@@ -10,10 +10,13 @@ export default function Carrera({carreras}){
     const supabaseClient = useSupabaseClient();
     const [data,setData] = useState();
     const [nuevaCarrera,setNuevaCarrera] = useState('');
+    //indice de carrera a editar
+    const [editaCarrera,setEditaCarrera] = useState(-1);
+    //info de carrera a editar
+    const [nombreEditaCarrera,setNombreEditaCarrera] = useState('');
     useEffect(()=>{
         async function loadData(){
             const {data }= await supabaseClient.from('profiles').select('id_rol').eq('id_usuario',user.id);
-            //console.log(data[0].id_rol );
             setData(data[0].id_rol); 
         }
         if(user) loadData()
@@ -42,11 +45,31 @@ export default function Carrera({carreras}){
         }
         
     }
+    const editarCarrera = async (id)=>{
+        try{
+            const {data,error} = await supabase 
+                                .from('carrera')
+                                .update({nombre:nombreEditaCarrera})
+                                .eq('id_carrera',id);
+            if(error) throw error
+            setNombreEditaCarrera('');
+            setEditaCarrera(-1);
+            window.location.reload();
+        }
+        catch(err){
+            alert(err.error_description||err.message)
+        }
+    }
+
     return (
         <div>
             <Menu userRole={data}></Menu>
             <ul>
-            {carreras.map((e)=>(<li id={e.id_carrera} key={e.id_carrera}>{e.id_carrera} {e.nombre}<button onClick={()=>(removeCarrera(e.id_carrera))}>Borrar</button></li>))}
+            {carreras.map((e)=>(<li id={e.id_carrera} key={e.id_carrera}>{e.id_carrera} {e.nombre}
+            <button onClick={()=>{editaCarrera===-1?setEditaCarrera(e.id_carrera):setEditaCarrera(-1)}} >Editar</button> 
+            <button onClick={()=>(removeCarrera(e.id_carrera))}>Borrar</button>
+            {e.id_carrera===editaCarrera && (<p><form onSubmit={()=>editarCarrera(e.id_carrera)}><label>Nuevo nombre</label><input value={nombreEditaCarrera} onChange={(e)=>{setNombreEditaCarrera(e.target.value)}}></input><button type='submit'>Cambiar</button></form></p>)}
+            </li>))}
             </ul>
             <form onSubmit={handleSubmit}>
                 <input type={'text'} value={nuevaCarrera} onChange={(e)=>{setNuevaCarrera(e.target.value)}} />
@@ -58,7 +81,7 @@ export default function Carrera({carreras}){
     }
 
 export async function getStaticProps(){
-    const {data,err} = await supabase.from('carrera').select("*");
+    const {data,err} = await supabase.from('carrera').select("*").order('id_carrera',{ascending:true});
     return {
         props:{carreras:data,},
     };
