@@ -21,6 +21,8 @@ export default function Carrera({carreras}){
     const handleSubmit=async (event)=>{
         try{
             const {data,error} = await supabaseClient.from('carrera').insert([{nombre:nuevaCarrera}]);
+            setNuevaCarrera('');
+            window.location.reload();
             if (error) throw error
         }catch(err){
             alert(err.error_description||err.message)
