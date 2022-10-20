@@ -25,8 +25,8 @@ export default function Carrera({carreras}){
         try{
             const {data,error} = await supabaseClient.from('carrera').insert([{nombre:nuevaCarrera}]);
             setNuevaCarrera('');
-            window.location.reload();
             if (error) throw error
+            window.location.reload();
         }catch(err){
             alert(err.error_description||err.message)
         }
@@ -72,7 +72,7 @@ export default function Carrera({carreras}){
             </li>))}
             </ul>
             <form onSubmit={handleSubmit}>
-                <input type={'text'} value={nuevaCarrera} onChange={(e)=>{setNuevaCarrera(e.target.value)}} />
+                <input type={'text'} value={nuevaCarrera} onChange={(e)=>{setNuevaCarrera(e.target.value)}}/>
                 <label>Nombre Carrera</label>
                 <button type='submit'>Agregar carrera</button>
             </form>

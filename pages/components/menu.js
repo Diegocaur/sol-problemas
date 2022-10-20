@@ -29,7 +29,13 @@ export default function Menu({userRole}){
             {userRole===1?<>
             <Link href='../admin-usuario'>Usuarios</Link>
             <Link href='../admin-carrera'>Carrera</Link></>
-            :
+            :userRole!==4?
+            <>
+            <Link href='../preguntas-frecuentes'>Preguntas frecuentes</Link>
+            <Link href='../consulta'>Consultas</Link>
+            {/* <Link href='../'></Link> */}
+            <Link href='../cuenta'>Cuenta</Link>
+            </>:
             <><Link href='../consulta'>Consultas</Link>
             <Link href='../historial'>Historial</Link>
             <Link href='../general'>General</Link>
