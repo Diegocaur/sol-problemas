@@ -13,7 +13,7 @@ export default function Carrera({carreras}){
     useEffect(()=>{
         async function loadData(){
             const {data }= await supabaseClient.from('profiles').select('id_rol').eq('id_usuario',user.id);
-            console.log(data[0].id_rol );
+            //console.log(data[0].id_rol );
             setData(data[0].id_rol); 
         }
         if(user) loadData()
@@ -26,17 +26,32 @@ export default function Carrera({carreras}){
             alert(err.error_description||err.message)
         }
     }
+    const removeCarrera= async (id)=>{
+        try{
+            const { data, error } = await supabase
+                                .from('carrera')
+                                .delete()
+                                .eq('id_carrera', id);
+            if(error) throw error
+            window.location.reload();
+        }
+        catch(err){
+            alert(err.error_description||err.message)
+        }
+        
+    }
     return (
         <div>
             <Menu userRole={data}></Menu>
-            {carreras.map((e)=>(<p>{e.id_carrera} {e.nombre}</p>))}
+            <ul>
+            {carreras.map((e)=>(<li id={e.id_carrera} key={e.id_carrera}>{e.id_carrera} {e.nombre}<button onClick={()=>(removeCarrera(e.id_carrera))}>Borrar</button></li>))}
+            </ul>
             <form onSubmit={handleSubmit}>
                 <input type={'text'} value={nuevaCarrera} onChange={(e)=>{setNuevaCarrera(e.target.value)}} />
                 <label>Nombre Carrera</label>
                 <button type='submit'>Agregar carrera</button>
             </form>
         </div>
-        
         );
     }
 

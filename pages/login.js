@@ -22,7 +22,9 @@ export default function LogIn(){
     }
     return (
         <form onSubmit={handleLogin}>
+            <label>Correo: </label>
             <input type="email" value={email} onChange={(e)=>setEmail(e.target.value)}/>
+            <label>Contraseña: </label>
             <input type="password" value={password} onChange={(e)=>setPassword(e.target.value)} />
             <button type='submit'>Entrar</button>
         </form>
