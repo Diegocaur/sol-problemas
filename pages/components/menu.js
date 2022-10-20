@@ -32,11 +32,11 @@ export default function Menu({userRole}){
             :userRole!==4?
             <>
             <Link href='../preguntas-frecuentes'>Preguntas frecuentes</Link>
-            <Link href='../consulta'>Consultas</Link>
+            <Link href='../consultas'>Consultas</Link>
             {/* <Link href='../'></Link> */}
             <Link href='../cuenta'>Cuenta</Link>
             </>:
-            <><Link href='../consulta'>Consultas</Link>
+            <><Link href='../consultas'>Consultas</Link>
             <Link href='../historial'>Historial</Link>
             <Link href='../general'>General</Link>
             <Link href='../cuenta'>Cuenta</Link></>}
