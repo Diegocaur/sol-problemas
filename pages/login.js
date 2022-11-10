@@ -1,5 +1,5 @@
 import {useState,useEffect} from 'react';
-//import {supabase} from './api/index.js' scwwww;
+//import {supabase} from './api/index.js' aksdjadkljsa;
 import {useRouter} from 'next/router';
 import { useSession, useSupabaseClient } from '@supabase/auth-helpers-react'
 export default function LogIn(){
