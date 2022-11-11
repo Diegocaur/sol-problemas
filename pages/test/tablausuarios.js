@@ -1,15 +1,14 @@
 import Head from 'next/head'
 import Image from 'next/image'
-import styles from '../styles/Home.module.css'
 import {Auth,ThemeSupa} from '@supabase/auth-ui-react';
-import {supabase} from './api/index.js';
+import {supabase} from '../api/index.js';
 import { useSession,useUser, useSupabaseClient } from '@supabase/auth-helpers-react';
 import {useState,useEffect} from 'react';
-import Account from './account';
-import LogIn from './login';
-import Menu from './components/menu.js';
+import Account from '../account';
+import LogIn from '../login';
+import Menu from './menu.js';
 
-export default function Usuarios({usuarios,roles}) {
+export default function Usuario({usuarios,roles}) {
     const [email,setEmail] = useState('');
     const [password,setPassword]= useState('');
     const [rut,setRut]= useState();
@@ -58,7 +57,7 @@ export default function Usuarios({usuarios,roles}) {
         }
     }
 
-    const editarCuenta= async (event,)=>{
+    /* const editarCuenta= async (event,)=>{
         event.preventDefault();
         try{
 
@@ -66,65 +65,26 @@ export default function Usuarios({usuarios,roles}) {
             alert(err.error_description||err.message)
 
         }
-    }
+    } */
 
   return (
     <div>
     <Menu userRole={data}></Menu>
-    <div class="container-md" style={{}}>
-            <table class="table table-striped table-bordered " style={{height: "0px", margin: "0px", padding: "0px", border: "0px"}}>
-                <thead>
-                    <tr class="table-info">
-                        <th style={{width: "397px", textAlign: "center"}}>ID</th>
-                        <th style={{width: "127px", textAlign: "center"}}>RUT</th>
-                        <th style={{width: "207px", textAlign: "center"}}>NOMBRE</th>
-                        <th style={{width: "63px", textAlign: "center"}}>EDAD</th>
-                        <th style={{width: "160px", textAlign: "center"}}> DIRECCION</th>
-                        <th style={{width: "112px", textAlign: "center"}}>ROL</th>
-                        <th></th>
-                    </tr>
-                </thead>
-            </table>
-            <div class = "overflow-auto" style={{height: "600px"}}>
-            <table class="table table-dark table-striped table-bordered" >
-                <tbody class = "table-group-divider">
-                {usuarios.map((e)=>{
-                        return (
-                            
-                    <tr key={e?.rut}>
-                        <td>{e?.id_usuario}</td>
-                        <td>{e?.rut}</td>
-                        <td>{e?.nombre}</td>
-                        <td>{e?.edad}</td>
-                        <td>{e?.direccion}</td> 
-                        {/* <td>{e.esta_activa}</td> */}
-                        <td>{roles[e.id_rol-1].nombre_rol}</td>
-                        <td style={{textAlign: "center"}}><button style = {{color: "white"}} onClick={()=>{edita===-1?setEdita(e?.rut):setEdita(-1)}} class="btn btn-warning">Editar</button></td>
-                        <td style={{textAlign: "center"}}><button class="btn btn-danger">Borrar</button></td>
-                        {e?.rut===edita && (<p>
-                        <label>Nombre: </label><input value={nombreEditar} onChange={(e)=>setNombreEditar(e.target.value)}></input>
-                        <label> Edad: </label><input type="number" value={edadEditar} onChange={(e)=>setEdadEditar(e.target.value)}></input>
-                        <label> Dirección: </label><input value={dirEditar} onChange={(e)=>setDirEditar(e.target.value)}></input>
-                        <label> ¿Está activa?: </label><input value={activaEditar} onChange={(e)=>setActivaEditar(e.target.value)}></input>
-                        </p>)}
-                    </tr>
-                    
-                    )
-                })}
-
-                </tbody>
-            </table>
-            </div>
-    </div>
-
-    <div>
-        
-    </div>
-    
-
- 
+    <ul>
+        <li key={-1}>ID RUT NOMBRE EDAD DIRECCION ESTA_ACTIVA ROL</li>
+    {usuarios.map((e)=>(<li key={e.rut}>{/* {console.log(roles[0].nombre_rol)} */}{e.id_usuario} {e.rut} {e.nombre} {e.edad} {e.direccion} {String(e.esta_activa)} {roles[e.id_rol-1].nombre_rol}
+    <button onClick={()=>{edita===-1?setEdita(e.rut):setEdita(-1)}}>Editar</button>
+    <button>Borrar</button>
+    {e.rut===edita && (<p>
+        <label>Nombre: </label><input value={nombreEditar} onChange={(e)=>setNombreEditar(e.target.value)}></input>
+        <label> Edad: </label><input type="number" value={edadEditar} onChange={(e)=>setEdadEditar(e.target.value)}></input>
+        <label> Dirección: </label><input value={dirEditar} onChange={(e)=>setDirEditar(e.target.value)}></input>
+        <label> ¿Está activa?: </label><input value={activaEditar} onChange={(e)=>setActivaEditar(e.target.value)}></input>
+    </p>)}
+    </li>))}
+    </ul>
     <div>Agregar Usuario</div>
-    <form action="#" onSubmit={handleSignUp}>
+    <form onSubmit={handleSignUp}>
             <div>
                 <input type="email" value={email} onChange={(e)=>setEmail(e.target.value)}/>
                 <label>Correo</label>
@@ -157,17 +117,17 @@ export default function Usuarios({usuarios,roles}) {
                         <label>{e.nombre_rol}</label>
                     </div> ))}
             </div>
-            <button action="#" type='submit'>Crear cuenta</button>
+            <button type='submit'>Crear cuenta</button>
         </form>
   </div>
   )
 }
 
 export async function getStaticProps(){
-    const {data,err} = await supabase.from('profiles').select("*").order('id_usuario',{ascending:true});
+    const {data:profiles,err} = await supabase.from('profiles').select("*").order('id_usuario',{ascending:true});
     const {data:roles} = await supabase.from('roles').select("*");
-    console.log(roles);
+    //console.log(roles[0]);
     return {
-        props:{usuarios:data,roles:roles,},
+        props:{usuarios:profiles, roles:roles},
     };
 }
