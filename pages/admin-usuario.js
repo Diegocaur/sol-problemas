@@ -8,6 +8,8 @@ import {useState,useEffect} from 'react';
 import Account from './account';
 import LogIn from './login';
 import Menu from './components/menu.js';
+import {useRouter} from 'next/router';
+
 
 export default function Usuarios({usuarios,roles}) {
     const [email,setEmail] = useState('');
@@ -27,6 +29,10 @@ export default function Usuarios({usuarios,roles}) {
     const [dirEditar,setDirEditar] = useState("");
     const [activaEditar,setActivaEditar] = useState("");
     const [rolEditar,setRolEditar] = useState("");
+    //router 
+
+    const router = useRouter();
+
     useEffect(()=>{
         async function loadData(){
             const {data }= await supabaseClient.from('profiles').select('id_rol').eq('id_usuario',user.id);
@@ -53,6 +59,8 @@ export default function Usuarios({usuarios,roles}) {
                     }
               });
               if(error) throw error
+              //recarga la pagina
+              router.reload();
         }catch(err){
             alert(err.error_description||err.message)
         }
@@ -62,6 +70,7 @@ export default function Usuarios({usuarios,roles}) {
         try{
             const {data, error} = await supabaseClient.from('profiles').update({nombre:nombreEditar,edad:edadEditar,direccion:dirEditar}).eq('id_usuario',id);
             if (error) throw error;
+            router.reload();
 
         }catch(err){
             alert(err.error_description||err.message)
@@ -72,6 +81,8 @@ export default function Usuarios({usuarios,roles}) {
         try{
             const {data,error} = await supabaseClient.from('profiles').delete().eq('id_usuario',id);
             if (error) throw error;
+            router.reload();
+
         }
         catch(err){
             alert(err.error_description||err.message)
@@ -135,7 +146,7 @@ export default function Usuarios({usuarios,roles}) {
 
  
     <div>Agregar Usuario</div>
-    <form action="#" onSubmit={handleSignUp}>
+    <form  onSubmit={handleSignUp}>
             <div>
                 <input type="email" value={email} onChange={(e)=>setEmail(e.target.value)}/>
                 <label>Correo</label>
@@ -168,7 +179,7 @@ export default function Usuarios({usuarios,roles}) {
                         <label>{e.nombre_rol}</label>
                     </div> ))}
             </div>
-            <button action="#" type='submit'>Crear cuenta</button>
+            <button  type='submit'>Crear cuenta</button>
         </form>
   </div>
   )
