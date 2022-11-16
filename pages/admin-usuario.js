@@ -58,16 +58,25 @@ export default function Usuarios({usuarios,roles}) {
         }
     }
 
-    const editarCuenta= async (event,)=>{
-        event.preventDefault();
+    const editarCuenta= async (id)=>{
         try{
+            const {data, error} = await supabaseClient.from('profiles').update({nombre:nombreEditar,edad:edadEditar,direccion:dirEditar}).eq('id_usuario',id);
+            if (error) throw error;
 
-        }catch(error){
+        }catch(err){
             alert(err.error_description||err.message)
 
         }
     }
-
+    const borrarCuenta = async (id )=>{
+        try{
+            const {data,error} = await supabaseClient.from('profiles').delete().eq('id_usuario',id);
+            if (error) throw error;
+        }
+        catch(err){
+            alert(err.error_description||err.message)
+        }
+    }
   return (
     <div>
     <Menu userRole={data}></Menu>
@@ -100,12 +109,14 @@ export default function Usuarios({usuarios,roles}) {
                         {/* <td>{e.esta_activa}</td> */}
                         <td>{roles[e.id_rol-1].nombre_rol}</td>
                         <td style={{textAlign: "center"}}><button style = {{color: "white"}} onClick={()=>{edita===-1?setEdita(e?.rut):setEdita(-1)}} class="btn btn-warning">Editar</button></td>
-                        <td style={{textAlign: "center"}}><button class="btn btn-danger">Borrar</button></td>
+                        <td style={{textAlign: "center"}}><button class="btn btn-danger" onClick={()=>{borrarCuenta(e.id_usuario)}}>Borrar</button></td>
                         {e?.rut===edita && (<p>
-                        <label>Nombre: </label><input value={nombreEditar} onChange={(e)=>setNombreEditar(e.target.value)}></input>
-                        <label> Edad: </label><input type="number" value={edadEditar} onChange={(e)=>setEdadEditar(e.target.value)}></input>
-                        <label> Dirección: </label><input value={dirEditar} onChange={(e)=>setDirEditar(e.target.value)}></input>
-                        <label> ¿Está activa?: </label><input value={activaEditar} onChange={(e)=>setActivaEditar(e.target.value)}></input>
+                            <form onSubmit={()=>editarCuenta(e.id_usuario)}>
+                                <label>Nombre: </label><input value={nombreEditar} onChange={(e)=>setNombreEditar(e.target.value)}></input>
+                                <label> Edad: </label><input type="number" value={edadEditar} onChange={(e)=>setEdadEditar(e.target.value)}></input>
+                                <label> Dirección: </label><input value={dirEditar} onChange={(e)=>setDirEditar(e.target.value)}></input>
+                                <button type="submit">Cambiar</button>
+                            </form>
                         </p>)}
                     </tr>
                     
