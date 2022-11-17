@@ -1,8 +1,11 @@
 import '../styles/globals.css'
+import '../node_modules/bootstrap/dist/css/bootstrap.min.css'
 import { createBrowserSupabaseClient } from '@supabase/auth-helpers-nextjs'
 import { SessionContextProvider } from '@supabase/auth-helpers-react'
 import {useRouter} from 'next/router';
 import {useState} from 'react';
+import '../styles/mystyles.css';
+
 
 function MyApp({ Component, pageProps }) {
   const router = useRouter();

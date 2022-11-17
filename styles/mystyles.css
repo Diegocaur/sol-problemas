@@ -1,0 +1,75 @@
+div.tam-row-login{
+    height: 100vh;
+    width: 180vh;
+    padding: 0%;
+    border: 0%;
+    margin: 0%;
+}
+
+div.left-blue-design{
+    height: 50vh;
+    border-Top-Left-Radius: 2vh;
+    border-Bottom-Left-Radius: 2vh;
+}
+
+div.blue-login-block{
+    width:75vh;
+    margin-Left: auto;
+}
+
+div.white-login-block{
+    width:25vh;
+    margin-Right: auto;
+}
+
+div.right-white-design{
+    height: 50vh;
+    border-Top-Right-Radius: 2vh;
+    border-Bottom-Right-Radius: 2vh;
+}
+
+div.login-form-auto{
+    margin-Right:auto; 
+    width: 65vh;
+}
+
+form.tam-col-login{
+    padding: 5vh; 
+    width: 40vh;
+    height: 20vh;
+    
+}
+
+button.responsive-size-login{
+    width: 30vh; 
+    height: 5vh;
+    padding: 0px;
+    font-Size: 2.2vh;
+}
+
+input.responsive-font{
+    font-Size: 2.2vh;
+}
+
+div.background-login{
+    background-image: url("../public/background_login.jpg");
+    background-repeat: no-repeat;
+    background-position: center;
+    position: absolute;
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    background-size: cover;
+}
+
+div.height-card{
+    min-height: 100vh;
+}
+
+div.height-card-left{
+    height: 20vh;
+    min-height: 100vh;
+}
+
+
+
