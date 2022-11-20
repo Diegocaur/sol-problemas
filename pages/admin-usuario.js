@@ -8,10 +8,12 @@ import {useState,useEffect} from 'react';
 import Account from './account';
 import LogIn from './login';
 import Menu from './components/menu.js';
+import Popup from "./components/popup.js";
 import {useRouter} from 'next/router';
 
 
 export default function Usuarios({usuarios,roles}) {
+    const [buttonPopup, setButtonPopup] = useState(false);
     const [email,setEmail] = useState('');
     const [password,setPassword]= useState('');
     const [rut,setRut]= useState();
@@ -91,23 +93,21 @@ export default function Usuarios({usuarios,roles}) {
   return (
     <div>
     <Menu userRole={data}></Menu>
-    <div class="container-md" style={{}}>
-            <table class="table table-striped table-bordered " style={{height: "0px", margin: "0px", padding: "0px", border: "0px"}}>
+    <div class="container_table">
+            <table >
                 <thead>
-                    <tr class="table-info">
-                        <th style={{width: "397px", textAlign: "center"}}>ID</th>
-                        <th style={{width: "127px", textAlign: "center"}}>RUT</th>
-                        <th style={{width: "207px", textAlign: "center"}}>NOMBRE</th>
-                        <th style={{width: "63px", textAlign: "center"}}>EDAD</th>
-                        <th style={{width: "160px", textAlign: "center"}}> DIRECCION</th>
-                        <th style={{width: "112px", textAlign: "center"}}>ROL</th>
+                    <tr>
+                        <th>ID</th>
+                        <th>RUT</th>
+                        <th>NOMBRE</th>
+                        <th>EDAD</th>
+                        <th> DIRECCION</th>
+                        <th>ROL</th>
+                        <th></th>
                         <th></th>
                     </tr>
                 </thead>
-            </table>
-            <div class = "overflow-auto" style={{height: "600px"}}>
-            <table class="table table-dark table-striped table-bordered" >
-                <tbody class = "table-group-divider">
+                <tbody>
                 {usuarios.map((e)=>{
                         return (
                             
@@ -119,8 +119,8 @@ export default function Usuarios({usuarios,roles}) {
                         <td>{e?.direccion}</td> 
                         {/* <td>{e.esta_activa}</td> */}
                         <td>{roles[e.id_rol-1].nombre_rol}</td>
-                        <td style={{textAlign: "center"}}><button style = {{color: "white"}} onClick={()=>{edita===-1?setEdita(e?.rut):setEdita(-1)}} class="btn btn-warning">Editar</button></td>
-                        <td style={{textAlign: "center"}}><button class="btn btn-danger" onClick={()=>{borrarCuenta(e.id_usuario)}}>Borrar</button></td>
+                        <td><button style = {{color: "white"}} onClick={()=>{edita===-1?setEdita(e?.rut):setEdita(-1)}} class="btn btn-warning">Editar</button></td>
+                        <td><button class="btn btn-danger" onClick={()=>{borrarCuenta(e.id_usuario)}}>Borrar</button></td>
                         {e?.rut===edita && (<p>
                             <form onSubmit={()=>editarCuenta(e.id_usuario)}>
                                 <label>Nombre: </label><input value={nombreEditar} onChange={(e)=>setNombreEditar(e.target.value)}></input>
@@ -136,17 +136,12 @@ export default function Usuarios({usuarios,roles}) {
 
                 </tbody>
             </table>
-            </div>
     </div>
-
-    <div>
-        
-    </div>
-    
-
- 
-    <div>Agregar Usuario</div>
-    <form  onSubmit={handleSignUp}>
+    <div className='text-center'>
+    <button onClick={() => setButtonPopup(true)}>gueta puto</button>
+    <Popup trigger={buttonPopup} setTrigger={setButtonPopup}>
+        <div >Agregar Usuario</div>
+        <form action="#" onSubmit={handleSignUp}>
             <div>
                 <input type="email" value={email} onChange={(e)=>setEmail(e.target.value)}/>
                 <label>Correo</label>
@@ -179,8 +174,10 @@ export default function Usuarios({usuarios,roles}) {
                         <label>{e.nombre_rol}</label>
                     </div> ))}
             </div>
-            <button  type='submit'>Crear cuenta</button>
+            <button href="./admin-usuario" type='submit'>Crear cuenta</button>
         </form>
+    </Popup>
+    </div>
   </div>
   )
 }

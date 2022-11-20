@@ -3,9 +3,11 @@ import {supabase} from './api/index.js';
 import Menu from './components/menu.js';
 import {useRouter} from 'next/router';
 import { useUser, useSupabaseClient } from '@supabase/auth-helpers-react';
-
+import Popup from "./components/popup.js";
 
 export default function Carrera({carreras}){
+    const [buttonPopup, setButtonPopup] = useState(false);
+    const [buttonPopup2, setButtonPopup2] = useState(false);
     const user = useUser();
     const supabaseClient = useSupabaseClient();
     const [data,setData] = useState();
@@ -54,6 +56,7 @@ export default function Carrera({carreras}){
             if(error) throw error
             setNombreEditaCarrera('');
             setEditaCarrera(-1);
+            
             window.location.reload();
         }
         catch(err){
@@ -64,18 +67,63 @@ export default function Carrera({carreras}){
     return (
         <div>
             <Menu userRole={data}></Menu>
-            <ul>
-            {carreras.map((e)=>(<li id={e.id_carrera} key={e.id_carrera}>{e.id_carrera} {e.nombre}
-            <button onClick={()=>{editaCarrera===-1?setEditaCarrera(e.id_carrera):setEditaCarrera(-1)}} >Editar</button> 
-            <button onClick={()=>(removeCarrera(e.id_carrera))}>Borrar</button>
-            {e.id_carrera===editaCarrera && (<p><form onSubmit={()=>editarCarrera(e.id_carrera)}><label>Nuevo nombre</label><input value={nombreEditaCarrera} onChange={(e)=>{setNombreEditaCarrera(e.target.value)}}></input><button type='submit'>Cambiar</button></form></p>)}
-            </li>))}
-            </ul>
-            <form onSubmit={handleSubmit}>
-                <input type={'text'} value={nuevaCarrera} onChange={(e)=>{setNuevaCarrera(e.target.value)}}/>
-                <label>Nombre Carrera</label>
-                <button type='submit'>Agregar carrera</button>
-            </form>
+            <div className='text-center pt-5'>
+                <button className="btn btn-primary"  onClick={() => setButtonPopup(true)}>Añadir Carrera</button>
+            </div>
+            <Popup trigger={buttonPopup} setTrigger={setButtonPopup}>
+                <div class="container text-center">
+                    <form onSubmit={handleSubmit}>
+                        <input type={'text'} value={nuevaCarrera} onChange={(e)=>{setNuevaCarrera(e.target.value)}}/>
+                        <label>Nombre Carrera</label>
+                        <button type='submit'>Agregar carrera</button>
+                    </form>
+                </div>
+            </Popup>
+            <div class="container_table"> 
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Id Carrera</th>
+                            <th>Nombre Carrera</th>
+                            <th></th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                    {carreras.map((e)=>{
+                        return (
+                    <tr key={e.id_carrera}>
+                        <th>{e.id_carrera}</th> 
+                        <th>{e.nombre}</th>
+                        <th><button class="btn btn-warning" onClick={()=>{
+                            
+                            if(editaCarrera===-1) {
+                                setEditaCarrera(e.id_carrera);                     
+                            }
+                            else
+                                setEditaCarrera(-1);
+                            setButtonPopup2(true);
+
+                        }}>Editar</button></th>
+                        <th><button class="btn btn-danger" onClick={()=>(removeCarrera(e.id_carrera))}>Borrar</button></th>
+                        
+                        {e.id_carrera===editaCarrera && (
+                        <Popup trigger={buttonPopup2} setTrigger={setButtonPopup2}>
+                            <div class="container text-center">
+                                <form onSubmit={()=>editarCarrera(e.id_carrera)}>
+                                    <label>Nuevo nombre</label>
+                                    <input value={nombreEditaCarrera} onChange={(e)=>{setNombreEditaCarrera(e.target.value)}}></input>
+                                    <button type='submit'>Cambiar</button>
+                                </form>
+                            </div>
+                        </Popup>)}
+                    </tr>
+                    )})}
+                    </tbody>
+                </table>
+                
+            </div>
         </div>
         );
     }

@@ -1,6 +1,7 @@
 import {useUser, useSupabaseClient } from '@supabase/auth-helpers-react';
 import Account from './account';
 import LogIn from './login';
+import Index_menu from './components/index_format.js';
 export default function Home() {
 
   /*const supabase = useSupabaseClient();*/
@@ -8,8 +9,10 @@ export default function Home() {
 
   return (
     <div>
-    {!user? <LogIn/>
-      :<Account user ={user}/>}
+      {!user? <LogIn/>
+    :<><Account user ={user}/>
+      <Index_menu/>
+      </>}
     </div>
   )
 }
