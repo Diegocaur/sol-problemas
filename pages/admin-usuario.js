@@ -22,7 +22,7 @@ export default function Usuarios({  }) {
     const [nombre, setNombre] = useState('');
     const [edad, setEdad] = useState();
     const [direccion, setDireccion] = useState('');
-    const [idRol, setIdRol] = useState(1);
+    const [idRol, setIdRol] = useState();
     const user = useUser();
     const supabaseClient = useSupabaseClient();
     const [data, setData] = useState();
@@ -54,8 +54,9 @@ export default function Usuarios({  }) {
             const {data: carreraEstudiantes} = await supabase.from('estudiantes_carrera').select('*');
             setCarreraEstudiantes(carreraEstudiantes);
             /* console.log(carreraEstudiantes); */
-        }catch(err){
-            alert(err.error_description);
+        }
+        catch(err){
+            alert(error.error_description);
         }})()
 
     },[]); 
@@ -76,7 +77,7 @@ export default function Usuarios({  }) {
             if (error) throw error
             setUsuarios(data)
         }catch(err){
-            alert("xddd"+err.error_description);
+            alert(error.error_description);
         }})()
 
     },[usuarios]);
@@ -104,7 +105,7 @@ export default function Usuarios({  }) {
             //recarga la pagina
             //router.reload();
         } catch (err) {
-            alert(err.error_description || err.message)
+            alert(error.error_description || err.message)
         }
     }
 
@@ -130,7 +131,7 @@ export default function Usuarios({  }) {
             }))
 
         } catch (err) {
-            alert(err.error_description || err.message)
+            alert(error.error_description || err.message)
 
         }
     }
@@ -142,7 +143,7 @@ export default function Usuarios({  }) {
 
         }
         catch (err) {
-            alert(err.error_description || err.message)
+            alert(error.error_description || err.message)
         }
     }
 
@@ -238,7 +239,8 @@ export default function Usuarios({  }) {
                                         <input className="form-control" type="text" value={direccion} placeholder="Ingrese una dirección válida." onChange={(e) => setDireccion(e.target.value)} />
                                     </div>
                                     {/* si el rol seleccionado no es 1 se muestra */}
-                                    {idRol!=1 && <div className="mb-3">
+                                    {idRol!=1 && 
+                                    <div className="mb-3">
                                         <p>Carrera_ID:</p>
                                         <div>
                                             <StableSelect
