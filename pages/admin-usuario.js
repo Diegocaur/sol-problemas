@@ -13,7 +13,7 @@ import { useRouter } from 'next/router';
 import StableSelect from "./components/StableSelect";
 
 
-export default function Usuarios({ usuarios, roles, carreras }) {
+export default function Usuarios({  }) {
     const [buttonPopup, setButtonPopup] = useState(false);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -35,11 +35,29 @@ export default function Usuarios({ usuarios, roles, carreras }) {
     const [selectedCarrera, setSelectedCarrera] = useState();
     //router 
     const router = useRouter();
-
-
+    //datos para vizualizar
+    const [usuarios,setUsuarios]=useState([]);
+    const [roles,setRoles]=useState([]);
+    const [carreras,setCarreras]=useState([]);
+    const [carreraEstudiantes,setCarreraEstudiantes]=useState([]);
     // Variable de la carrera a la que quieres asignar al alumno
 
+    //funciona al principio de la pag
+    useEffect(()=>{
+        (async ()=>{try{
+            const { data: roles } = await supabase.from('roles').select("*").order('id_roles',{ascending:true});
+            setRoles(roles);
+            const { data: carreras } = await supabase.from('carrera').select("*").order('id_carrera', { ascending: true });
+            setCarreras(carreras);
+            /* console.log(carreras); */
+            const {data: carreraEstudiantes} = await supabase.from('estudiantes_carrera').select('*');
+            setCarreraEstudiantes(carreraEstudiantes);
+            /* console.log(carreraEstudiantes); */
+        }catch(err){
+            alert(error.error_description);
+        }})()
 
+    },[]); 
 
     useEffect(() => {
         async function loadData() {
@@ -49,6 +67,19 @@ export default function Usuarios({ usuarios, roles, carreras }) {
         }
         if (user) loadData()
     }, [user])
+    
+    //funciona si cambia usuarios
+    useEffect(()=>{
+        (async ()=>{try{
+            const { data, error } = await supabase.from('profiles').select("*").order('id_usuario', { ascending: true });
+            if (error) throw error
+            setUsuarios(data)
+        }catch(err){
+            alert(error.error_description);
+        }})()
+
+    },[usuarios]);
+
     const handleSignUp = async (event) => {
         event.preventDefault();
         try {
@@ -68,8 +99,9 @@ export default function Usuarios({ usuarios, roles, carreras }) {
                 }
             });
             if (error) throw error
+            setUsuarios(usuarios=>[...usuarios,data]);
             //recarga la pagina
-            router.reload();
+            //router.reload();
         } catch (err) {
             alert(err.error_description || err.message)
         }
@@ -87,7 +119,14 @@ export default function Usuarios({ usuarios, roles, carreras }) {
         try {
             const { data, error } = await supabaseClient.from('profiles').update({ nombre: nombreEditar, edad: edadEditar, direccion: dirEditar }).eq('id_usuario', id);
             if (error) throw error;
-            router.reload();
+            setUsuarios(usuarios.map((e)=>{
+                if(e.id_usuario===id){
+                    return data;
+                }
+                else{
+                    return e;
+                }
+            }))
 
         } catch (err) {
             alert(err.error_description || err.message)
@@ -98,7 +137,7 @@ export default function Usuarios({ usuarios, roles, carreras }) {
         try {
             const { data, error } = await supabaseClient.from('profiles').delete().eq('id_usuario', id);
             if (error) throw error;
-            router.reload();
+            setUsuarios(usuarios.filter((e)=>e.id_usuario!==id));
 
         }
         catch (err) {
@@ -128,7 +167,6 @@ export default function Usuarios({ usuarios, roles, carreras }) {
         });
     }
 
-
     return (
         <div>
             <Menu userRole={data}></Menu>
@@ -143,20 +181,20 @@ export default function Usuarios({ usuarios, roles, carreras }) {
                         <div className="g-3">
                             <form className="form-group row" action="#" onSubmit={handleSignUp}>
                                 <div class="col">
-                                    <div class="mb-3">
+                                    <div className="mb-3">
                                         <label className="form-label">Correo</label>
                                         <input className="form-control" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
                                     </div>
-                                    <div class="mb-3">
+                                    <div className="mb-3">
                                         <label className="form-label">Rut</label>
                                         <input className="form-control" type="text" value={rut} onChange={(e) => setRut(e.target.value)} />
                                     </div>
-                                    <div class="mb-3">
+                                    <div className="mb-3">
                                         <label className="form-label">Edad</label>
                                         <input className="form-control" type="number" value={edad} onChange={(e) => setEdad(e.target.value)} />
                                     </div>
-
-                                    <div class="mb-3">
+                                    {/* si el rol seleccionado no es 1 se muestra */}
+                                    {idRol!=1 && <div className="mb-3">
                                         <p>Carrera_ID:</p>
                                         <div>
                                             <StableSelect
@@ -169,7 +207,7 @@ export default function Usuarios({ usuarios, roles, carreras }) {
                                                 onChange={handleSelectChange}
                                             />
                                         </div>
-                                    </div>
+                                    </div>}
 
                                 </div>
                                 <div class="col">
@@ -215,7 +253,7 @@ export default function Usuarios({ usuarios, roles, carreras }) {
                                 </div>
 
 
-                                <button className="btn btn-success" href="./admin-usuario" type='submit'>Crear cuenta</button>
+                                <button className="btn btn-success" type='submit'>Crear cuenta</button>
                             </form>
                         </div>
                     </div>
@@ -247,9 +285,14 @@ export default function Usuarios({ usuarios, roles, carreras }) {
                                     <td>{e?.nombre}</td>
                                     <td>{e?.edad}</td>
                                     <td>{e?.direccion}</td>
-                                    <td>{e?.carrera_usuario}</td>
+                                    <td>{e?.id_rol===4?
+                                        carreras.find((car)=>car.id_carrera===(carreraEstudiantes.find(carEst=>carEst.id_estudiante===e?.id_usuario)?.id_carrera))?.nombre
+                                        :e?.id_rol===3?(carreras.find((car)=>car.id_secretaria===e?.id_usuario)?.nombre)
+                                        :e?.id_rol===2?(carreras.find((car)=>car.id_director===e?.id_usuario)?.nombre)
+                                        :null
+                                        }</td>
                                     {/* <td>{e.esta_activa}</td> */}
-                                    <td>{roles[e.id_rol - 1]?.nombre_rol}</td>
+                                    <td>{roles[e?.id_rol - 1]?.nombre_rol}</td>
                                     <td><button style={{ color: "white" }} onClick={() => { edita === -1 ? setEdita(e?.rut) : setEdita(-1) }} class="btn btn-warning">Editar</button></td>
                                     <td><button class="btn btn-danger" onClick={() => {mostrarAlerta(e) }}>Borrar</button></td>
                                     {e?.rut === edita && (<p>
@@ -272,13 +315,4 @@ export default function Usuarios({ usuarios, roles, carreras }) {
     )
 }
 
-export async function getStaticProps() {
-    const { data, err } = await supabase.from('profiles').select("*").order('id_usuario', { ascending: true });
-    const { data: roles } = await supabase.from('roles').select("*");
-    console.log(roles);
-    const { data: carrerasdata } = await supabase.from('carrera').select("*").order('id_carrera', { ascending: true });
-    return {
-        props: { usuarios: data, roles: roles, carreras: carrerasdata, },
-    };
-}
 
