@@ -13,7 +13,7 @@ export default function Categorias({ categorias, responsables }) {
   const user = useUser();
   const [rol, setRol] = useState(-1);
   const supabaseClient = useSupabaseClient();
-  const [enviarMensaje, setEnviarMensaje] = useState("");
+
   //Obtener el rol de la persona en la pagina
   useEffect(() => {
     async function loadData() {
@@ -25,6 +25,7 @@ export default function Categorias({ categorias, responsables }) {
     }
 
     if (user) loadData();
+    console.log(responsables);
   }, [user]);
 
   //----------------------------------------------------
@@ -52,11 +53,9 @@ export default function Categorias({ categorias, responsables }) {
   //------------------------------------------------------------
   //------Para Subir Consulta
   const subirrMensaje = async (e) => {
-    setEnviarMensaje(e.target[0].value); //se guarda el valor del textarea
-
     try {
       const result = await supabaseClient.from("consultas").insert({
-        mensaje: enviarMensaje,
+        mensaje: selectedMensaje,
         categoria: selectedCategoria,
         encargado: selectedResponsable,
         userId: user.id,
@@ -66,10 +65,11 @@ export default function Categorias({ categorias, responsables }) {
     }
   };
 
-  //Para almacenar la categoria y responsable seleccionado
+  //Para almacenar la categoria y responsable seleccionado y mensaje
 
   const [selectedCategoria, setSelectedCategoria] = useState();
   const [selectedResponsable, setSelectedResponsable] = useState();
+  const [selectedMensaje, setSelectedMensaje] = useState();
 
   //Para Cambios en Categorias
   const handleSelectChange = ({ value }) => {
@@ -78,6 +78,10 @@ export default function Categorias({ categorias, responsables }) {
   //Para Cambios en Responsables
   const handleSelectChange2 = ({ value }) => {
     setSelectedResponsable(value);
+  };
+
+  const handleSelectChange3 = (e) => {
+    setSelectedMensaje(e.target.value);
   };
 
   return (
@@ -105,7 +109,7 @@ export default function Categorias({ categorias, responsables }) {
           <StableSelect
             defaultValue={{ label: "Selecciona una opción", value: "empty" }}
             options={responsables.map((sup) => ({
-              label: sup.nombre,
+              label: sup.nombre_rol,
               value: sup.nombre,
               id: sup.id_usuario,
             }))}
@@ -118,7 +122,7 @@ export default function Categorias({ categorias, responsables }) {
             <textarea
               className="textarea"
               rows="5"
-              onChange={(e) => setEnviarMensaje(e.target.value)}
+              onChange={handleSelectChange3}
             ></textarea>
             <div className="center">
               <button className="boton">Enviar Consulta</button>
@@ -136,10 +140,9 @@ export async function getStaticProps() {
   const { data: roles } = await supabase.from("roles").select("*");
 
   //------------------------------------------------------
-  const { data: Responsables } = await supabase.from("profiles").select("*");
-  Responsables.pop();
-  Responsables.shift();
+  const { data: Responsables } = await supabase.from("roles").select("*");
   Responsables.splice(2);
+
   //----------------------------------------------------------
   const { data: elementos } = await supabase
     .from("categoria")
