@@ -21,7 +21,7 @@ export default function Usuarios({  }) {
     const [nombre, setNombre] = useState('');
     const [edad, setEdad] = useState();
     const [direccion, setDireccion] = useState('');
-    const [idRol, setIdRol] = useState();
+    const [idRol, setIdRol] = useState(1);
     const user = useUser();
     const supabaseClient = useSupabaseClient();
     const [data, setData] = useState();
