@@ -3,18 +3,25 @@ import Image from "next/image";
 import styles from "../styles/Home.module.css";
 import { Auth, ThemeSupa } from "@supabase/auth-ui-react";
 import { useUser, useSupabaseClient } from "@supabase/auth-helpers-react";
+import StableSelect from "./components/StableSelect";
 import { useState, useEffect } from "react";
 import Account from "./account";
 import Menu from "./components/menu.js";
+import { supabase } from "./api";
 
 export default function Consultas({}) {
   const user = useUser();
   const supabaseClient = useSupabaseClient();
-  const [data, setData] = useState();
-  const [texto, setTexto] = useState();
+  const [rol, setRol] = useState();
   const [carrera, setCarrera] = useState(-1);
   const [director, setDirector] = useState();
-  const [idTicket, setIdTicket] = useState();
+  const [secretaria, setSecretaria] = useState();
+  //info ticket y mensaje
+  const [asunto,setAsunto] = useState();
+  const [mensaje, setMensaje] = useState();
+  // encargado a enviar el correo
+  const [encargadoAEnviar,setEncarcagoAEnviar] = useState();
+  const encargados = ['Director','Secretaria'];
   useEffect(() => {
     async function loadData() {
       const { data } = await supabaseClient
@@ -22,74 +29,103 @@ export default function Consultas({}) {
         .select("id_rol")
         .eq("id_usuario", user.id);
       //console.log(data[0].id_rol );
-      setData(data[0].id_rol);
-      let { data: carrera, error } = await supabaseClient
-        .from("estudiantes_carrera")
-        .select("id_carrera,carrera(id_director)")
-        .eq("id_estudiante", user.id);
-      //console.log(carrera[0].carrera.id_director);
-      setCarrera(carrera[0].id_carrera);
-      setDirector(carrera[0].carrera.id_director);
+      setRol(data[0].id_rol);
+      console.log(rol,"data");
+      if(rol===4){
+          let { data: carrera, error } = await supabaseClient
+            .from("estudiantes_carrera")
+            .select("id_carrera,carrera(id_director,id_secretaria)")
+            .eq("id_estudiante", user.id);
+          //console.log(carrera[0].carrera.id_director);
+          setCarrera(carrera[0].id_carrera);
+          setDirector(carrera[0].carrera.id_director);
+          setSecretaria(carrera[0].carrera.id_secretaria);
+          //console.log({"director":director,"secretaria":secretaria});
+      }
     }
     if (user) loadData();
   }, [user]);
-  const handleSignUp = async (event) => {
-    event.preventDefault();
-    try {
-      let { data, error } = await supabase.auth.signUp({
-        email: email,
-        password: password,
-        options: {
-          data: {
-            rut: parseInt(rut),
-            nombre: nombre,
-            edad: parseInt(edad),
-            direccion: direccion,
-            esta_activa: true,
-            id_rol: idRol,
-          },
-        },
-      });
-      if (error) throw error;
-    } catch (err) {
-      alert(err.error_description || err.message);
-    }
-  };
   const crearConsulta = async () => {
+    
     try {
-      const { data: ticket } = await supabaseClient
-        .from("ticket")
-        .insert([{ estado_ticket: 1, id_sol: user.id, id_rec: director }])
-        .select();
-      //ticket
-      console.log(data);
-      setIdTicket(data[0].id_ticket);
-      const { error } = await supabaseClient
-        .from("mensaje")
-        .insert([
-          { id_ticket: data[0].id_ticket, mensaje: texto, id_usuario: user.id },
-        ]);
+        if(encargadoAEnviar==='Director'){
+            const { data, error } = await supabase
+            .rpc('crear_ticket', {
+            ticket:{id_rec:director,asunto:asunto}, 
+            mensaje:{mensaje:mensaje}
+            })
+            if (error) throw error;
+
+        }
+        else{
+            const { data, error } = await supabase
+            .rpc('crear_ticket', {
+                ticket:{id_rec:secretaria,asunto:asunto}, 
+                mensaje:{mensaje:mensaje}
+            })
+            if (error) throw error;
+        } 
+        //const {data,error}= await supabase.from('ticket').insert()
     } catch (error) {
       alert(err.error_description || err.message);
     }
   };
+/* 
+  const handleSelectChange = ({value}) */
   return (
     <div>
-      <Menu userRole={data}></Menu>
-      <div>Crear consulta</div>
-      <form /* onSubmit={crearConsulta} */>
-        <p>
-          <textarea
-            row="10"
-            cols="100"
-            value={texto}
-            onChange={(e) => setTexto(e.target.value)}
-          ></textarea>
-        </p>
-        <button /* type='submit' */ onClick={crearConsulta}>
-          Enviar Consulta
-        </button>
-      </form>
+      <Menu userRole={rol}></Menu>
+
+      <>
+        <div className="padding-selection">
+          <h2 className="centrar-h2">Sube tu consulta</h2>
+        </div>
+        {/* <div className="padding-selection" id="1">
+          <p>Categorias: {selectedCategoria} </p>
+          <StableSelect
+            defaultValue={{ label: "Selecciona una opción", value: "empty" }}
+            options={categorias.map((sup) => ({
+              label: sup.nombre,
+              value: sup.nombre,
+              id: sup.id_categoria,
+            }))}
+            onChange={handleSelectChange}
+          />
+        </div> */}
+        <div className="padding-selection">
+            <p>Asunto: </p>
+            <input type='text' onChange={(e)=>setAsunto(e.target.value)}></input>
+        </div>
+        <div className="padding-selection">
+          <p>Encargado Consulta: {encargadoAEnviar} </p>
+          <StableSelect
+            defaultValue={{ label: "Selecciona una opción", value: "empty" }}
+            options={encargados.map((e) => ({
+              label: e,
+              value: e,
+              id: e,
+              /* id: sup.id_usuario, */
+            }))}
+            onChange={(e)=>{setEncarcagoAEnviar(e.value)}}
+          />
+        </div>
+        <div className="padding-selection">
+          <p>Descripción: </p>
+          <form onSubmit={crearConsulta}>
+            <textarea
+              className="textarea"
+              rows="5"
+              onChange={(e) => setMensaje(e.target.value)}
+            ></textarea>
+            <div className="center">
+              <button className="boton" type='submit'>Enviar Consulta</button>
+            </div>
+          </form>
+          {console.log({
+        "mensaje":{id_rec:director,asunto:asunto}, 
+        "ticket":{mensaje:mensaje}})}
+        </div>
+      </>
     </div>
   );
 }
