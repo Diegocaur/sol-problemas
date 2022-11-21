@@ -119,10 +119,10 @@ export default function Carrera({carreras}){
                     {carreras.map((e)=>{
                         return (
                     <tr key={e.id_carrera}>
-                        <th>{e.id_carrera}</th> 
-                        <th>{e.nombre}</th>
-                        <th><button class="btn btn-warning" onClick={()=>{editaCarrera===-1?setEditaCarrera(e.id_carrera):setEditaCarrera(-1)}} >Editar</button></th>
-                        <th><button class="btn btn-danger" onClick={()=>{mostrarAlerta(e)}}>Borrar</button></th>
+                        <td>{e.id_carrera}</td> 
+                        <td>{e.nombre}</td>
+                        <td><button class="btn btn-warning" onClick={()=>{editaCarrera===-1?setEditaCarrera(e.id_carrera):setEditaCarrera(-1)}} >Editar</button></td>
+                        <td><button class="btn btn-danger" onClick={()=>{mostrarAlerta(e)}}>Borrar</button></td>
                         {e.id_carrera===editaCarrera && (<p><form onSubmit={()=>editarCarrera(e.id_carrera)}><label>Nuevo nombre</label><input value={nombreEditaCarrera} onChange={(e)=>{setNombreEditaCarrera(e.target.value)}}></input><button type='submit'>Cambiar</button></form></p>)}
                     </tr>
                     )})}
