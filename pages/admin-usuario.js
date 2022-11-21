@@ -193,36 +193,7 @@ export default function Usuarios({  }) {
                                         <label className="form-label">Edad</label>
                                         <input className="form-control" type="number" value={edad} onChange={(e) => setEdad(e.target.value)} />
                                     </div>
-                                    {/* si el rol seleccionado no es 1 se muestra */}
-                                    {idRol!=1 && <div className="mb-3">
-                                        <p>Carrera_ID:</p>
-                                        <div>
-                                            <StableSelect
-                                                defaultValue={{ label: "Selecciona una opción", value: "empty" }}
-                                                options={carreras.map((e) => ({
-                                                    label: e.nombre,
-                                                    value: parseInt(e.id_carrera),
-                                                    id: e.id_carrera,
-                                                }))}
-                                                onChange={handleSelectChange}
-                                            />
-                                        </div>
-                                    </div>}
-
-                                </div>
-                                <div class="col">
-                                    <div class="mb-3">
-                                        <label className="form-label">Contraseña</label>
-                                        <input className="form-control" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
-                                    </div>
-                                    <div class="mb-3">
-                                        <label className="form-label">Nombre</label>
-                                        <input className="form-control" type="text" value={nombre} onChange={(e) => setNombre(e.target.value)} />
-                                    </div>
-                                    <div class="mb-3">
-                                        <label className="form-label">Dirección</label>
-                                        <input className="form-control" type="text" value={direccion} onChange={(e) => setDireccion(e.target.value)} />
-                                    </div>
+                                    
                                     <div className='container'>
                                         <div className="row mb-3" onChange={(e) => setIdRol(e.target.value)}>
                                             <p>Rol</p>
@@ -250,10 +221,41 @@ export default function Usuarios({  }) {
                                             </div>
                                         </div>
                                     </div>
+
+                                </div>
+                                <div class="col">
+                                    <div class="mb-3">
+                                        <label className="form-label">Contraseña</label>
+                                        <input className="form-control" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+                                    </div>
+                                    <div class="mb-3">
+                                        <label className="form-label">Nombre</label>
+                                        <input className="form-control" type="text" value={nombre} onChange={(e) => setNombre(e.target.value)} />
+                                    </div>
+                                    <div class="mb-3">
+                                        <label className="form-label">Dirección</label>
+                                        <input className="form-control" type="text" value={direccion} onChange={(e) => setDireccion(e.target.value)} />
+                                    </div>
+                                    {/* si el rol seleccionado no es 1 se muestra */}
+                                    {idRol!=1 && <div className="mb-3">
+                                        <p>Carrera_ID:</p>
+                                        <div>
+                                            <StableSelect
+                                                defaultValue={{ label: "Selecciona una opción", value: "empty" }}
+                                                options={carreras.map((e) => ({
+                                                    label: e.nombre,
+                                                    value: parseInt(e.id_carrera),
+                                                    id: e.id_carrera,
+                                                }))}
+                                                onChange={handleSelectChange}
+                                            />
+                                        </div>
+                                    </div>}
+                                    
                                 </div>
 
 
-                                <button className="btn btn-success" type='submit'>Crear cuenta</button>
+                                <button className="btn btn-success" href="./admin-usuario" type='submit'>Crear cuenta</button>
                             </form>
                         </div>
                     </div>
@@ -314,5 +316,4 @@ export default function Usuarios({  }) {
         </div>
     )
 }
-
 

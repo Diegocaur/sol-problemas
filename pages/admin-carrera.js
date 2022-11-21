@@ -7,7 +7,6 @@ import Popup from "./components/popup.js";
 
 export default function Carrera({carreras}){
     const [buttonPopup, setButtonPopup] = useState(false);
-    const [buttonPopup2, setButtonPopup2] = useState(false);
     const user = useUser();
     const supabaseClient = useSupabaseClient();
     const [data,setData] = useState();
@@ -56,7 +55,6 @@ export default function Carrera({carreras}){
             if(error) throw error
             setNombreEditaCarrera('');
             setEditaCarrera(-1);
-            
             window.location.reload();
         }
         catch(err){
@@ -64,24 +62,51 @@ export default function Carrera({carreras}){
         }
     }
 
+    const mostrarAlerta = async (e) => {
+        swal({
+          title: "Eliminar Carrera",
+          text: "¿Estás seguro que deseas eliminar esta carrera?    ",
+          icon: "error",          
+          buttons: ["No", "Si"]
+        }).then((respuesta) => {
+          if (respuesta) {
+            swal({
+              text: "Carrera Eliminada Exitosamente",
+              icon: "success",
+              timer: "30000",
+              
+            });
+            removeCarrera(e.id_carrera)
+            //location.href = "/";
+          }
+        });
+    }
+
     return (
         <div>
             <Menu userRole={data}></Menu>
             <div className='text-center pt-5'>
-                <button className="btn btn-primary"  onClick={() => setButtonPopup(true)}>Añadir Carrera</button>
+                <button className="btn btn-dark"  onClick={() => setButtonPopup(true)}>Agregar Carrera</button>
             </div>
             <Popup trigger={buttonPopup} setTrigger={setButtonPopup}>
-                <div class="container text-center">
-                    <form onSubmit={handleSubmit}>
-                        <input type={'text'} value={nuevaCarrera} onChange={(e)=>{setNuevaCarrera(e.target.value)}}/>
-                        <label>Nombre Carrera</label>
-                        <button type='submit'>Agregar carrera</button>
+                <div className="container">
+                    <div className="text-center pb-5">
+                        <label >Formulario de ingreso de carreras al sistema </label>
+                    </div>
+                    <form className = "form-group" onSubmit={handleSubmit}>
+                        <div>
+                            <label className="form-label">Nombre Carrera: </label>
+                            <input className="form-control mb-3" type={'text'} value={nuevaCarrera} onChange={(e)=>{setNuevaCarrera(e.target.value)}}/>
+                        </div>
+                        <div className="text-center">
+                            <button className="btn btn-success m-3" type='submit'>Agregar carrera</button>
+                        </div>
                     </form>
                 </div>
             </Popup>
-            <div class="container_table"> 
-                <table>
-                    <thead>
+            <div class="container tableFixHead table-responsive-sm overflow-y mt-5 p-0"> 
+                <table className='table text-center align-items-center table-striped table-bordered mx-auto'>
+                    <thead className="table-primary">
                         <tr>
                             <th>Id Carrera</th>
                             <th>Nombre Carrera</th>
@@ -96,34 +121,15 @@ export default function Carrera({carreras}){
                     <tr key={e.id_carrera}>
                         <th>{e.id_carrera}</th> 
                         <th>{e.nombre}</th>
-                        <th><button class="btn btn-warning" onClick={()=>{
-                            
-                            if(editaCarrera===-1) {
-                                setEditaCarrera(e.id_carrera);                     
-                            }
-                            else
-                                setEditaCarrera(-1);
-                            setButtonPopup2(true);
-
-                        }}>Editar</button></th>
-                        <th><button class="btn btn-danger" onClick={()=>(removeCarrera(e.id_carrera))}>Borrar</button></th>
-                        
-                        {e.id_carrera===editaCarrera && (
-                        <Popup trigger={buttonPopup2} setTrigger={setButtonPopup2}>
-                            <div class="container text-center">
-                                <form onSubmit={()=>editarCarrera(e.id_carrera)}>
-                                    <label>Nuevo nombre</label>
-                                    <input value={nombreEditaCarrera} onChange={(e)=>{setNombreEditaCarrera(e.target.value)}}></input>
-                                    <button type='submit'>Cambiar</button>
-                                </form>
-                            </div>
-                        </Popup>)}
+                        <th><button class="btn btn-warning" onClick={()=>{editaCarrera===-1?setEditaCarrera(e.id_carrera):setEditaCarrera(-1)}} >Editar</button></th>
+                        <th><button class="btn btn-danger" onClick={()=>{mostrarAlerta(e)}}>Borrar</button></th>
+                        {e.id_carrera===editaCarrera && (<p><form onSubmit={()=>editarCarrera(e.id_carrera)}><label>Nuevo nombre</label><input value={nombreEditaCarrera} onChange={(e)=>{setNombreEditaCarrera(e.target.value)}}></input><button type='submit'>Cambiar</button></form></p>)}
                     </tr>
                     )})}
                     </tbody>
                 </table>
-                
             </div>
+            
         </div>
         );
     }

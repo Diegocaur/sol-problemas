@@ -29,14 +29,14 @@ export default function Menu({ userRole }) {
   const mostrarAlerta = async (e) => {
     e.preventDefault();
     swal({
-      title: "Enviar Consulta",
-      text: "Estás seguro que deseas subir tu consulta",
-      icon: "warning",
+      title: "Cerrar Sesión",
+      text: "¿Estás seguro de querer cerrar sesión?",
+      icon: "info",
       buttons: ["No", "Si"],
     }).then((respuesta) => {
       if (respuesta) {
         swal({
-          text: "Consulta Enviada Exitosamente",
+          text: "Sesión Cerrada Exitosamente",
           icon: "success",
           timer: "30000",
         });
