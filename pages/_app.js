@@ -5,8 +5,8 @@ import { SessionContextProvider } from '@supabase/auth-helpers-react'
 import {useRouter} from 'next/router';
 import {useState} from 'react';
 import '../styles/mystyles.css';
-import '../styles/table_responsive.css';
-import '../styles/table_style.css';
+//import '../styles/table_responsive.css';
+//import '../styles/table_style.css';
 import '../styles/Index_menu.css';
 
 

@@ -30,7 +30,7 @@ export default function Consultas({}) {
         .eq("id_usuario", user.id);
       //console.log(data[0].id_rol );
       setRol(data[0].id_rol);
-      console.log(rol,"data");
+      //console.log(rol,"data");
       if(rol===4){
           let { data: carrera, error } = await supabaseClient
             .from("estudiantes_carrera")
